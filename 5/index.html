@@ -11,7 +11,7 @@
     top: 0px;
     left:0px;
     right:0px;
-    bottom:0px
+    bottom:0px;
   }
   #icons {
     position:absolute;
@@ -22,20 +22,38 @@
   #zoom {
     position:absolute;
     left:70px;
-    bottom:5px;
-    z-index:2
+    bottom:7px;
+    z-index:2;
+  }
+  #filter {
+    border-style: solid;
+    border-width: 1px;
+    padding:5px 10px;
+    background-color:white;
+    position:absolute;
+    left:7px;
+    bottom:32px;
+    z-index:3;
+  }
+  #clusterInfo {
+    display: none;
+    border-style: solid;
+    border-width: 1px;
+    padding:5px 10px;
+    background-color:white;
+    position:absolute;
+    right:7px;
+    bottom:13px;
+    z-index:3;
   }
 </style>
 
 </head>
-
-
 <body>
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-<!--MarkerCluster uncompiled source can be located here: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js -->
-<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer_compiled.js"></script>
+<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.1.2/src/markerclusterer.js"></script>
 <script type="text/javascript" src="main.js"></script>
 
 <div id='map'></div>
@@ -45,8 +63,13 @@
     </a>
 </div>
 <div id='zoom'>
-    <button type="button" onclick="ZoomWorld()">World</button>
+    <button type="button" onclick="ZoomWorld()">Zoom All</button>
 </div>
+<div id='filter'>
+</div>
+<div id='clusterInfo'>
+</div>
+
 </body>
 </html>
 

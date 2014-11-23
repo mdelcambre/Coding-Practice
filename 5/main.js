@@ -7,10 +7,12 @@
  * Plots markers and information requested by ajax on a google map
  */
 
+var markerCluster;
 var infowindow;
+var clusterWindow;
 var map;
 var markers = [];
-
+var reportIcons = {};
 
 // Initialize the map and make the ajax request.
 function init() {
@@ -53,9 +55,18 @@ function PlotPoints (points) {
 
   var clusterOptions = {
     maxZoom: 14,
-    gridSize: 35
+    gridSize: 35,
+    ignoreHidden: true,
+    zoomOnClick: false
   };
-  var markerCluster = new MarkerClusterer(map, markers, clusterOptions);
+
+  PopulateFilter();
+  markerCluster = new MarkerClusterer(map, markers, clusterOptions);
+  google.maps.event.addListener(markerCluster, "mouseover", ClusterInfoWindow);
+  google.maps.event.addListener(markerCluster, "mouseout", function(cluster) {
+    document.getElementById('clusterInfo').style.display = 'none';
+  });
+  ZoomWorld();
 }
 
 
@@ -95,6 +106,7 @@ function PlotMarker (markerData) {
 // Checks if the icon exists based on report type.
 // otherwise return the default
 function GetIcon(reportType) {
+  if (reportIcons[reportType]) return reportIcons[reportType];
 
   var url = 'icons/' + reportType + '.png';
   var http = new XMLHttpRequest();
@@ -102,15 +114,58 @@ function GetIcon(reportType) {
   http.send();
 
   if (http.status === 200) {
+    reportIcons[reportType] = url;
     return url;
   }
+  reportIcons[reportType] = 'icons.default.png';
   return 'icons/default.png'
 }
 
 function ZoomWorld() {
-  map.panTo({lat: 21.6, lng: -23});
-  map.setZoom(3);
+  markerCluster.fitMapToMarkers();
+  markerCluster.repaint(); // occasional issue with failure to redraw
 }
 
-google.maps.event.addDomListener(window, 'load', init);
+function PopulateFilter() {
+  var content = '<form name="form1" action=""><strong>Legend / Toggles</strong><br />\n';
+  Object.keys(reportIcons).sort().forEach(function(reportType){
+    content += '<img style="width:32px;height:37px;vertical-align:middle" src="';
+    content += reportIcons[reportType] + '" alt="'+ reportType +'"/>\n';
+    content += '<input type="checkbox" name="' + reportType +'" id="' + reportType;
+    content += '" onclick="Markers(\''+reportType+'\')" checked="checked" /> '+reportType+'<br />\n';
+  });
+  content += '</form>'
+  document.getElementById('filter').innerHTML = content;
+}
 
+function Markers(reportType){
+  var newValue = document.getElementById(reportType).checked;
+  if (infowindow) infowindow.close();
+  for (var i=0;i<markers.length;i++) {
+    if (markers[i].title==reportType)  {
+      markers[i].setVisible(newValue);
+    }
+  }
+  markerCluster.repaint();
+}
+
+function ClusterInfoWindow(cluster) {
+  var typeCounts = {};
+  cluster.markers_.forEach(function(marker){
+    if (!typeCounts[marker.title]) typeCounts[marker.title] = 0;
+    typeCounts[marker.title] += 1;
+  });
+  var content = '<strong>Cluster Info</strong><br />';
+  Object.keys(typeCounts).sort().forEach(function(reportType) {
+    content += '<img style="width:32px;height:37px;vertical-align:middle" src="';
+    content += reportIcons[reportType] + '" alt="'+ reportType +'"/>\n';
+    content += ' ' + reportType + ':  '+ typeCounts[reportType] + '<br />\n';
+  });
+  document.getElementById('clusterInfo').innerHTML = content;
+  document.getElementById('clusterInfo').style.display = 'block';
+}
+
+
+
+
+google.maps.event.addDomListener(window, 'load', init);
