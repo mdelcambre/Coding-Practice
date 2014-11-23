@@ -57,13 +57,15 @@ function PlotPoints (points) {
     maxZoom: 14,
     gridSize: 35,
     ignoreHidden: true,
-    zoomOnClick: false
   };
 
   PopulateFilter();
   markerCluster = new MarkerClusterer(map, markers, clusterOptions);
   google.maps.event.addListener(markerCluster, "mouseover", ClusterInfoWindow);
   google.maps.event.addListener(markerCluster, "mouseout", function(cluster) {
+    document.getElementById('clusterInfo').style.display = 'none';
+  });
+  google.maps.event.addListener(markerCluster, "click", function(cluster) {
     document.getElementById('clusterInfo').style.display = 'none';
   });
   ZoomWorld();
