@@ -75,6 +75,7 @@ function PlotPoints (points) {
 // Plots the actual marker with the appropriate icon and infowindow
 function PlotMarker (markerData) {
 
+  markerData.report_type = encodeURI(markerData.report_type);
   var icon = GetIcon(markerData.report_type);
   var latLng = new google.maps.LatLng(markerData.location.t, markerData.location.n);
   var markerOptions = {
