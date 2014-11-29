@@ -7,7 +7,7 @@
 #                                                                             #
 # The program first computes all valid moves from each key. The results are   #
 # stored in a hash, based on the key value.                                   #
-# Second the program recursively itterates through the branches of the        #
+# Second the program recursively iterates through the branches of the        #
 # possible moves.                                                             #
 #                                                                             #
 # Author: Mark Delcambre                                                      #
@@ -19,7 +19,7 @@
 ###############################################################################
 use strict; use warnings;
 
-# Define some global varriables for use in the functions below
+# Define some global variables for use in the functions below
 my $COUNT = 0;
 my %keypad;
 
@@ -65,7 +65,7 @@ sub generate_moves {
         push @valid_moves, 0;
     }
 
-    # Itterate over all the possible knight moves
+    # Iterate over all the possible knight moves
     foreach my $move (@knight_moves) {
         my $x2 = $x1 + ${ $move }[1];
         my $y2 = $y1 + ${ $move }[0];
@@ -79,18 +79,18 @@ sub generate_moves {
         # we have a valid move, push the letter/key onto the list
         push @valid_moves, $board[$y2][$x2];
     }
-    # asign the list of values to the key.
+    # assign the list of values to the key.
     $keypad{$letter} = \@valid_moves;
 }
 
 
-# Funciton: itterate_moves
+# Function: iterate_moves
 # Takes the current length, the current number of vowels, and list of moves as
 # arguments.
 # The function first checks vowels and length, and updates the necessary
-# varriables. Then it itterates through all of the valid moves stored in the
+# variables. Then it iterates through all of the valid moves stored in the
 # hash generated above.
-sub itterate_moves {
+sub iterate_moves {
 
     my ($length,$vowels,$movesref) = @_;
     my @moves = @{ $movesref};
@@ -115,12 +115,12 @@ sub itterate_moves {
 
     # recursively call itself with each of the moves from this location
     for (my $i =1;$i <= $#moves;$i++) {
-        itterate_moves($length,$vowels,$keypad{$moves[$i]});
+        iterate_moves($length,$vowels,$keypad{$moves[$i]});
     }
 }
 
 # Generate all the moves from each location.
-# double nested for loop hits each location on the borad and calls
+# double nested for loop hits each location on the board and calls
 # generate_moves
 for (my $y=0;$y <= 3;$y++){
     for (my $x=0;$x <= 4; $x++){
@@ -132,9 +132,9 @@ for (my $y=0;$y <= 3;$y++){
     }
 }
 
-# Itterate through each starting move, calling the itterate moves function
+# Iterate through each starting move, calling the iterate moves function
 foreach my $key (keys %keypad){
-    itterate_moves(0,0,$keypad{$key});
+    iterate_moves(0,0,$keypad{$key});
 }
 
 # All done, print the global $COUNT
